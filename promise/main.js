@@ -8,18 +8,18 @@ function findMovie(e) {
   if (searchValue.length > 0) {
     console.log(searchValue);
     getNews(searchValue);
+  } else {
+    return headLineNews()
   }
 }
 
 async function getNews(value) {
-  const date = new Date();
-  const dateNow = date.toISOString().slice(0, 10);
+  // const date = new Date();
+  // const dateNow = date.toISOString().slice(0, 10);
   const url =
     "https://newsapi.org/v2/everything?" +
     `q=${value}&` +
-    `from=${dateNow}&` +
-    "sortBy=popularity&" +
-    "apiKey=e4b3a56f213640a5a646dace0a0d5c49";
+    "apiKey=defeb60311944f86b75cd4a0700a4957";
   const req = new Request(url);
 
   try {
@@ -39,7 +39,7 @@ async function displayNews(data) {
     newsItem.classList.add(".news-item");
     newsItem.innerHTML = `
     <ul>
-        <li>${data.title}</li>
+        <li>${await data[i].title}</li>
     </ul>
     `;
     news.appendChild(newsItem);
@@ -48,4 +48,24 @@ async function displayNews(data) {
 
 async function displayError(error) {
   alert(await error.message);
+}
+
+window.onload = async function () {
+  await headLineNews()
+};
+
+async function headLineNews() {
+  const url =
+    "https://newsapi.org/v2/top-headlines?" +
+    "country=id&" +
+    "apiKey=defeb60311944f86b75cd4a0700a4957";
+  const req = new Request(url);
+
+  try {
+    const res = await fetch(req);
+    const data = await res.json();
+    if (data.status !== "error") await displayNews(data.articles);
+  } catch (error) {
+    if (data.status === "error") await displayError(error);
+  }
 }
